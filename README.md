@@ -43,14 +43,14 @@ Data Collection Plan:
 
 Data on the green lines' reliability (is the branch down? Is the train delayed? ridership data) and financial data on the green line branches need to be collected.
 For performance data and the fare evasion estimation model, I will be using the following:
-MBTA V3 API
-Weather API
-Ticketmaster API (for special event days of increased demand)
+MBTA V3 API (https://www.mbta.com/developers/v3-api)
+MassGIS Data (This one makes distinctions between above-ground and below-ground stops)(https://www.mass.gov/info-details/massgis-data-mbta-rapid-transit)
+GTFS (https://github.com/google/transit/tree/master/gtfs/spec/en)
+Weather API (https://openweathermap.org/api)
 
 For financial data, I will be using the following:
-MBTA Operating Costs Per Line
-MBTA Rideship Reports
-Fare Revenue By Line
+2022 - 2024 NTD Annual Data - Operating Expenses (by Function) (https://data.transportation.gov/Public-Transit/2022-2024-NTD-Annual-Data-Operating-Expenses-by-Fu/dkxx-zjd6/about_data)
+MBTA Rideship Reports (https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-and-line/about)
 
 
 Modeling Plan:
