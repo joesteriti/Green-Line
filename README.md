@@ -1,6 +1,5 @@
 # Green-Line
-Green Line Branch Performance, Fare Evasion Estimation and Revenue Efficiency (CS506 Data Science Tools and Applications Project)
-
+## Green Line Branch Performance and Fare Evasion Estimation (CS506 Data Science Tools and Applications Project)
 
 Description:
 
@@ -8,6 +7,83 @@ MBTA Green Line has four branches (B, C, D, and E), and this project investigate
 
 The project has three components. A predictive performance model will be created to forecast if a branch will experience a delay on a given day based on weather conditions, service announcements, and time of day. Secondly, a financial analysis model will determine which branch generates the most revenue relative to its operating costs. Lastly and most interestingly, create a model to estimate how much revenue is lost from fare evasion compared to ridership count, which is very common on the above-ground stops.
 
+### How to build and run the code:
+
+1) Clone repo and enter it
+
+```bash
+git clone git@github.com:joesteriti/Green-Line.git
+cd "Final Project"
+```
+
+2) Create and activate a virtual environment
+
+```bash
+make setup
+source .venv/bin/activate
+make install
+```
+
+3) Set API key
+
+- Copy `.env.example` to `.env`.
+- Put your MBTA API key in `.env` as:
+
+```bash
+MBTA_API_KEY=your_real_key_here
+```
+
+You can request a key here: https://api-v3.mbta.com/
+
+4) Download and place headway data
+
+Download and unzip CSV files from:
+- MBTA Rapid Transit Headways 2024: https://mbta-massdot.opendata.arcgis.com/datasets/ccb2941254944803bbd4e2df58e09906/about
+- MBTA Rapid Transit Headways 2025: https://mbta-massdot.opendata.arcgis.com/datasets/84c9d171d32945f594fbb4d889153c44/about
+- MBTA Rapid Transit Headways 2026: https://mbta-massdot.opendata.arcgis.com/datasets/fffd5e8ff7f042deb7834f3badf49e58/about
+
+Expected folder layout:
+
+```text
+data/
+  Headways_2024/
+    2024-01_Headway.csv
+    ...
+    2024-12_Headway.csv
+  Headways_2025/
+    2025-01_Headway.csv
+    ...
+    2025-12_Headway.csv
+  Headways_2026/
+    2026-01_Headway.csv
+    2026-02_Headway.csv
+    2026-03_Headway.csv
+```
+
+5) Validate setup and run notebooks
+
+```bash
+make check
+make notebook
+```
+
+Then run:
+- `performance_model/performance_model.ipynb`
+- `fare_evasion.ipynb`
+
+### Tests:
+
+- In `performance_model/performance_model.ipynb`, run all cells and confirm the tests section at the bottom passes.
+- In `fare_evasion.ipynb`, run all cells and confirm the final tables/plots are generated.
+
+### Visualizations:
+
+### Description of data processing and model:
+
+### Results:
+
+-------------------------
+## From the Proposal:
 
 Project Timeline:
 
@@ -18,7 +94,7 @@ Week 3: Fare Evasion Estimation Development
 
 Week 4 & 5: Performance Modeling (Includes the ML component, so gave it extra time)
 
-Week 6: Financial Analysis (Going through MBTA budget documents)
+Week 6: Financial Analysis (Going through MBTA budget documents) 
 
 Week 7: Visualization (Including interactive visuals to effectively display the users' findings)
 
@@ -72,3 +148,4 @@ Test Plan:
 Performance Model: Withhold 30% of the data and train on the rest.
 Revenue Efficiency: Statistical significance testing between branches.
 Fare Evasion Estimation Model: Statistical significance testing between branches.
+-----------------------
