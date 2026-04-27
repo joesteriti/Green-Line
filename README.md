@@ -77,10 +77,25 @@ Then run:
 - In `fare_evasion.ipynb`, run all cells and confirm the final tables/plots are generated.
 
 ### Visualizations:
+Average Headway Per Day:
+
+Headway Per Season:
+
+Important: Which branch is worst most often:
+
+Correlation Matrix
 
 ### Description of data processing and model:
 
 ### Results:
+
+Average Headway Distribution:
+
+![Average Headway Distribution](performance_model/01_headway_distribution.png)
+
+Headway Gap on Incorrect Predictions:
+Describe more in results section
+Predicted vs Actual Headway Per BrancH:
 
 -------------------------
 ## From the Proposal:
