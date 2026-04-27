@@ -1,0 +1,7 @@
+# .gitignore
+data/*
+!data/.gitkeep
+.env
+.venv/
+venv/
+env/
