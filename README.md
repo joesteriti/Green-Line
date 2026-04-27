@@ -89,13 +89,22 @@ Correlation Matrix
 
 ### Results:
 
+My original goal was to predict the worst branch when it came to headway. As my project went on, I realized that I should just predict the headway for each branch, and then make classifications after if needed. It is more helpful to consumers and policy makers to know the actual values rather than the worst branch. The goal was to make this useful in trying to determine whether to take one branch or aother for consumers and trying to decide which branch to improve for policy makers/MBTA coordinators.
+
+An example for why solely classifcation would be bad. Even in the case that some branch is worse than another, if the branch is 2 seconds worse but doesn't actually give the quantifiable results, it could be misleading which is why goals changed to predicting 
+
+With that said, I still included a prediction of the worst branch which is around 40% accurate and the top 2 worst branches predicted is about 70% accurate. The more useful data is the continuous headway error (MAE) showing that the overall MAE is 38.3 seconds. 
+
 Average Headway Distribution:
 
-![Average Headway Distribution](performance_model/01_headway_distribution.png)
+![Headway Gap on Incorrect Predictions](visualizations/HeadwayGapOnIncorrectPredictions.png)
 
-Headway Gap on Incorrect Predictions:
-Describe more in results section
-Predicted vs Actual Headway Per BrancH:
+The median is 29.2 seconds. From a customer stand point, a less than 30 second error is acceptable when it comes to my daily commute. It is an error I am willing to incur for this model. If we look at the per branch breakdown for MAE of headway, we see that most 3 out of 4 branches hover around 40 second error compared to the actual headway recorded. Anything less than a minute would be acceptable in my standards and even in the 90th percentile, it is still less than a minute error.
+
+
+![Predicted vs Actual Headway Per Branch](visualizations/PredictedVSAvgHeadwayByBranch.png)
+
+Using this graph, the regression is pretty accurate given the data. Branch E suffers from a decent amount of outliers but the other branches fit very well according to this graphic.
 
 -------------------------
 ## From the Proposal:
@@ -161,6 +170,7 @@ Fare Evasion Estimation Model: Bar chart displaying the evasion rate per branch,
 Test Plan:
 
 Performance Model: Withhold 30% of the data and train on the rest.
+
 Revenue Efficiency: Statistical significance testing between branches.
+
 Fare Evasion Estimation Model: Statistical significance testing between branches.
------------------------
