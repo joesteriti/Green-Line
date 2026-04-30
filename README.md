@@ -1,12 +1,6 @@
 # Green-Line
 ## Green Line Branch Performance and Fare Evasion Estimation (CS506 Data Science Tools and Applications Project)
 
-Description:
-
-MBTA Green Line has four branches (B, C, D, and E), and this project investigates the operational reliability and the financial efficiency of those branches. The Green Line offers both underground and above-ground services that serve different Boston neighborhoods and college campuses. After visiting some other countries this past year, it made me wonder why our train system seemed far behind train systems of some other countries. This project attempts to identify the issues and inefficiencies that the MBTA faces and potentially lead to change for a better system.
-
-The project has three components. A predictive performance model will be created to forecast if a branch will experience a delay on a given day based on weather conditions, service announcements, and time of day. Secondly, a financial analysis model will determine which branch generates the most revenue relative to its operating costs. Lastly and most interestingly, create a model to estimate how much revenue is lost from fare evasion compared to ridership count, which is very common on the above-ground stops.
-
 ### How to build and run the code:
 
 1) Clone repo and enter it
@@ -77,100 +71,77 @@ Then run:
 - In `fare_evasion.ipynb`, run all cells and confirm the final tables/plots are generated.
 
 ### Visualizations:
-Average Headway Per Day:
 
-Headway Per Season:
+There are a handful of visualizations in the notebooks, but I only included the ones I found most important in this report.
 
-Important: Which branch is worst most often:
+![Average Headway by Day](visualizations/AverageHeadwaybyDayofWeek.png)
+Purpose: To see if some branches have worse days than others or some days have worse headways than others
 
-Correlation Matrix
+![Worst Branch Frequency](visualizations/WorstBranchFrequency.png)
+Purpose: To get an idea of which branches may suffer from longer headway
+
+![Feature Correlation Matrix](visualizations/FeatureCorrelationMatrix.png)
+Purpose: To discover highly correlated features and take them out to reduce multicolinearity
+
+![Evading Riders & Revenue Lost vs Fare Evasion Rate Per Month](visualizations/EvadingRiders&RevenueLostvsFareEvasionRatePerMonth.png)
+Purpose: To give an idea of how much fare evasion and renvenue loss there is in a month given a lack of fare evasion rate data
 
 ### Description of data processing and model:
 
+Data Processing:
+
+The time series data was pulled directly from the MBTA and they were CSV files spanning January 2024 through March 2026, loaded in chucks for the four Green Line branches. Each record was a single train departure with direction, branch, and headway in seconds. After filtering, the trip-level records were aggregated to one row that represented one branch per day with mean, max, and standard deviation of headway. Temporal features like day of week, hour, rush hour, and holiday were obtained by timestamps. A weather dataframe containing precipitation, snowfall, windspeed, and other important weather features was created using Open-Meteo API and merged by date. Stop metadata was obtained through the MBTA v3 API to compute centroids for geographical analysis. Manual mapping of stops was required since there were no branch-level assignments, but there are only specific stops for each branch so that mapping took advantage of that fact. The final dataset contained features about weather, temporal and lag that were computed with deep consideration of data leakage
+
+Feature Set:
+
+There are a number of features used in this model. I will not list all of them, but a few main ones that had the most importance.
+
+The single most important set of features that had the biggest improvement on model performance were the lag features. Up until that moment, the models were basically training on the same data so there wasn't much of a difference and prediction performance wasn't much better than random guessing. When I added the lag features, prediction performance improve by about 20% in accuracy and allows the model to actualy be a good predictor of headway irregularity.
+
+Weather was the same way as it did improve performance, but a little less of an impact. It was hard to find a way to differeniate between different weather conditions as they are so close geographically.
+
+The holiday feature and day before holiday feature was also a way to capture those one off days where it may impact headway performance as people may be using the branches more or less depending on if they are going to work or shop.
+
+Model:
+
+I used a XGBoost model for each of the 4 Green Line branches. XGBoost automatically handles features that are nonlinear like the lag features and weather through tree splits and other models would need a manual interaction term. Training branch-specific models rather than a single model (which I originally was planning to do) allows for the model to learn branch specific patterns using meaningful, unique information by branch to accurately predict headway.
+
+I considered other models like random forest and ridge. Ridge struggles with nonlinear relationships and random forest doesn't correct errors from previous trees. Random forest would work almost as it reduces variance across independently built trees, but XGBoost improves by targeting residuals of previous trees which works well. I did not consider using a neural network. It may work better but I believed that it had diminishing returns on model performance and that a regression model with boosting would be sufficient given my situation.
+
+I split the dataset into 80% training and 20% test. Due to it being time series data, I could not use a typical random split as it would cause data leakage so the split preserved temporal order. I used 5 fold cross-validation using the TimeSeriesSplit to preserve the order within the training set.
+
+Using GridSearchCV, I found the best parameters for the model and used those best parameters to automatically refit the best model on the training data. I used 4 separate models to fit for each of the branches to get a numerical solution and scoring was MAE.
+
 ### Results:
 
-My original goal was to predict the worst branch when it came to headway. As my project went on, I realized that I should just predict the headway for each branch, and then make classifications after if needed. It is more helpful to consumers and policy makers to know the actual values rather than the worst branch. The goal was to make this useful in trying to determine whether to take one branch or aother for consumers and trying to decide which branch to improve for policy makers/MBTA coordinators.
+My original goal was to predict the worst branch when it came to headway. As my project went on, I realized that I should just predict the headway for each branch, and then make classifications after if needed. It is more helpful to consumers and policy makers to know the actual values rather than the worst branch since they have access to more information. The goal was to make this useful in trying to determine whether to take one branch or another for consumers and trying to decide which branch to improve for policy makers/MBTA coordinators.
 
 An example for why solely classifcation would be bad. Even in the case that some branch is worse than another, if the branch is 2 seconds worse but doesn't actually give the quantifiable results, it could be misleading which is why goals changed to predicting 
 
 With that said, I still included a prediction of the worst branch which is around 40% accurate and the top 2 worst branches predicted is about 70% accurate. The more useful data is the continuous headway error (MAE) showing that the overall MAE is 38.3 seconds. 
 
-Average Headway Distribution:
+Headway Distribution:
+
+Continuous headway error (MAE):
+Overall MAE: 38.3 sec (0.64 min)
+
+Branch MAE (sec):
+Green-C    32.5
+Green-D    40.2
+Green-B    40.4
+Green-E    40.5
 
 ![Headway Gap on Incorrect Predictions](visualizations/HeadwayGapOnIncorrectPredictions.png)
 
 The median is 29.2 seconds. From a customer stand point, a less than 30 second error is acceptable when it comes to my daily commute. It is an error I am willing to incur for this model. If we look at the per branch breakdown for MAE of headway, we see that most 3 out of 4 branches hover around 40 second error compared to the actual headway recorded. Anything less than a minute would be acceptable in my standards and even in the 90th percentile, it is still less than a minute error.
 
-
 ![Predicted vs Actual Headway Per Branch](visualizations/PredictedVSAvgHeadwayByBranch.png)
 
 Using this graph, the regression is pretty accurate given the data. Branch E suffers from a decent amount of outliers but the other branches fit very well according to this graphic.
 
--------------------------
-## From the Proposal:
+![Evading Riders & Revenue Lost vs Fare Evasion Rate Per Month](visualizations/EvadingRiders&RevenueLostvsFareEvasionRatePerMonth.png)
 
-Project Timeline:
-
-Week 1 & 2: Data Collection, Exploration, Cleaning
-        Need to identify and clean important predictors. May need to do a lot of cleaning, so gave it some extra time. 
-        
-Week 3: Fare Evasion Estimation Development
-
-Week 4 & 5: Performance Modeling (Includes the ML component, so gave it extra time)
-
-Week 6: Financial Analysis (Going through MBTA budget documents) 
-
-Week 7: Visualization (Including interactive visuals to effectively display the users' findings)
-
-Week 8: Final Testing and Final Deliverables
-
-Backup Plan: Only complete the Fare Evasion Estimation and Performance Model.
+Unfortunately, this is the goal that interested me the most, but did not have data to quantify the actual evasion rates. I found one article that is linked in the code that explained the evasion rate was about 56.5% for above ground stops. I heavily disagree with that considering I have never seen a single person pay on an above ground station. There is no way to confirm this as they do not have MBTA workers stationed at these stops that collect or enforce payment of fares. I would consider it a normal thing that above ground stops are considered "free" as there is no enforcement or repercussions for not paying the fares. This graph is the best I could come up with considering the data limitations. I've explained this in my check in meetings before. I think this graph could be used by policy makers to really quantify lost fares and see the potential of a better train system through adequate funding that they are not receiving due to nonenforcement of fare payments.
 
 
-Goals:
-
-Goal 1: Performance Model
-Predict which branch will experience the worst delays on a given day, using weather conditions, day of the week, time, if there is a special event, and recent service disruption history as predictors. An ML model that produces accurate results is the final deliverable.
-
-Goal 2: Revenue Efficiency
-To identify which branch generates the most value relative to their operating costs by calculating and comparing revenue per mile for each Green Line Branch. A final deliverable will be each branch ranked by financial efficiency.
-
-Goal 3: Fare Evasion Estimation Model
-To accurately estimate lost fares across different station characteristics by comparing card taps to the actual ridership count. A final deliverable will be estimated lost fares per branch per day.
-
-
-Data Collection Plan:
-
-Data on the green lines' reliability (is the branch down? Is the train delayed? ridership data) and financial data on the green line branches need to be collected.
-For performance data and the fare evasion estimation model, I will be using the following:
-MBTA V3 API (https://www.mbta.com/developers/v3-api)
-MassGIS Data (This one makes distinctions between above-ground and below-ground stops)(https://www.mass.gov/info-details/massgis-data-mbta-rapid-transit)
-GTFS (https://github.com/google/transit/tree/master/gtfs/spec/en)
-Weather API (https://openweathermap.org/api)
-
-For financial data, I will be using the following:
-2022 - 2024 NTD Annual Data - Operating Expenses (by Function) (https://data.transportation.gov/Public-Transit/2022-2024-NTD-Annual-Data-Operating-Expenses-by-Fu/dkxx-zjd6/about_data)
-MBTA Rideship Reports (https://mbta-massdot.opendata.arcgis.com/datasets/MassDOT::mbta-monthly-ridership-by-mode-and-line/about)
-
-
-Modeling Plan:
-
-Performance Model: A random forest regression 
-Revenue Efficiency: Mathematical calculation (Not ML)
-Fare Evasion Estimation Model: Mathematical calculation and statistics (Not ML)
-
-
-Visualization Plan:
-
-Performance Model: Time series graph showing expected delays vs actual delays for each branch
-Revenue Efficiency: Radar charts displaying different performance metrics and a scatter plot (Revenue vs cost)
-Fare Evasion Estimation Model: Bar chart displaying the evasion rate per branch, or a heatmap showing the location of each station and the magnitude of fare loss for each station
-
-
-Test Plan:
-
-Performance Model: Withhold 30% of the data and train on the rest.
-
-Revenue Efficiency: Statistical significance testing between branches.
-
-Fare Evasion Estimation Model: Statistical significance testing between branches.
+## Demo Video Link: []
