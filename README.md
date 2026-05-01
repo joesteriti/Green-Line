@@ -137,7 +137,7 @@ Green-E    40.5
 
 The median is 29.2 seconds. From a customer stand point, a less than 30 second error is acceptable when it comes to my daily commute. It is an error I am willing to incur for this model. If we look at the per branch breakdown for MAE of headway, we see that most 3 out of 4 branches hover around 40 second error compared to the actual headway recorded. Anything less than a minute would be acceptable in my standards and even in the 90th percentile, it is still less than a minute error.
 
-![Predicted vs Actual Headway Per Branch](visualizations/PredictedVSAvgHeadwayByBranch.png)
+![Predicted vs Actual Headway Per Branch](visualizations/PredictedvsActualHeadwaybyBranch.png)
 
 Using this graph, the regression is pretty accurate given the data. Branch E suffers from a decent amount of outliers but the other branches fit very well according to this graphic.
 
