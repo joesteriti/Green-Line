@@ -144,6 +144,3 @@ Using this graph, the regression is pretty accurate given the data. Branch E suf
 ![Evading Riders & Revenue Lost vs Fare Evasion Rate Per Month](visualizations/EvadingRiders&RevenueLostvsFareEvasionRatePerMonth.png)
 
 Unfortunately, this is the goal that interested me the most, but did not have data to quantify the actual evasion rates. I found one article that is linked in the code that explained the evasion rate was about 56.5% for above ground stops. I heavily disagree with that considering I have never seen a single person pay on an above ground station. There is no way to confirm this as they do not have MBTA workers stationed at these stops that collect or enforce payment of fares. I would consider it a normal thing that above ground stops are considered "free" as there is no enforcement or repercussions for not paying the fares. This graph is the best I could come up with considering the data limitations. I've explained this in my check in meetings before. I think this graph could be used by policy makers to really quantify lost fares and see the potential of a better train system through adequate funding that they are not receiving due to nonenforcement of fare payments.
-
-
-## Demo Video Link: []
